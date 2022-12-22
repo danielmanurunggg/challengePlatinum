@@ -1,7 +1,7 @@
 import pickle
 import numpy as np
 from keras_preprocessing.sequence import pad_sequences
-from tensorflow.keras.models import load_model
+from keras.models import load_model
 
 with open('data/LSTM/tokneizerLSTM.pkl', 'rb') as handle:
     tokenizer = pickle.load(handle)

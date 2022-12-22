@@ -17,7 +17,7 @@ def predictText_ANN (twt):
     elif (np.argmax(sentiment) == 1):
         return "positive"
     elif (np.argmax(sentiment) == 0):
-        return "Netral"
+        return "neutral"
 
 def predictFile_ANN(X_test):
     print(X_test)
