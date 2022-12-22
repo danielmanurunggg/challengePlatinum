@@ -1,0 +1,7 @@
+flasgger
+Flask
+numpy
+pandas
+Sastrawi
+Unidecode
+gradio

@@ -1,6 +1,6 @@
 Swagger: '2.0'
 tags:
-  - name: PREDICT USING LSTM API
+  - name: PREDICT USING ANN API
 get:
   description: None
 responses:
