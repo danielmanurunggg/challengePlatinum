@@ -1,7 +1,7 @@
 import sqlite3
 import pandas as pd
 
-def inputdatabaseTextLSTM(a, b):
+def inputDBTextLSTM(a, b):
     #createDB
     conn = sqlite3.connect("binar.db")
     # create table           
@@ -14,7 +14,7 @@ def inputdatabaseTextLSTM(a, b):
     conn.close()
     print("Data berhasil disimpan di db sqlite")
 
-def inputdatabaseFileLSTM(a):
+def inputDBFileLSTM(a):
     #createDB
     conn = sqlite3.connect("binar.db")
     # create table           
@@ -30,7 +30,7 @@ def inputdatabaseFileLSTM(a):
     conn.close()
     print("Data berhasil disimpan di db sqlite")
 
-def inputdatabaseTextANN(a, b):
+def inputDBTextANN(a, b):
     #createDB
     conn = sqlite3.connect("binar.db")
     # create table           
@@ -43,7 +43,7 @@ def inputdatabaseTextANN(a, b):
     conn.close()
     print("Data berhasil disimpan di db sqlite")
 
-def inputdatabaseFileANN(a):
+def inputDBFileANN(a):
     #createDB
     conn = sqlite3.connect("binar.db")
     # create table           

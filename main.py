@@ -1,17 +1,16 @@
 from flask import Flask, request, jsonify
 from flasgger import Swagger, LazyString, LazyJSONEncoder, swag_from
 import time
-from clean_data import _toLower, _remove_punct, _remove_space, _remove_link, _remove_hastag, _normalization, _remove_another_text, _remove_another_file
+from clean_data2 import _toLower, _remove_punct, _remove_space, _remove_link, _remove_hastag, _remove_another_text, _remove_another_file, _normalization
 from predictLSTM import predictText_LSTM, predictFile_LSTM
 from predictANN import predictText_ANN, predictFile_ANN
 import pandas as pd
-from database import inputdatabaseTextLSTM, inputdatabaseFileLSTM, inputdatabaseTextANN, inputdatabaseFileANN
+from database import inputDBTextLSTM, inputDBFileLSTM, inputDBTextANN, inputDBFileANN
 
 app = Flask(__name__) # deklarasi Flask
 app.json_encoder = LazyJSONEncoder
 
 def text_processing(s):
-    text = s
     s = _toLower(s)
     s = _remove_link(s)
     s = _remove_another_text(s)
@@ -20,6 +19,18 @@ def text_processing(s):
     s = _normalization(s)
     s = _remove_space(s)
     return s
+
+def file_processing(df):
+    df['text'] = df['text'].apply(_toLower)
+    df['text'] = df['text'].apply(_remove_link)
+    df['text'] = df['text'].apply(_remove_another_file)
+    df['text'] = df['text'].apply(_remove_hastag)
+    df['text'] = df['text'].apply(_remove_punct)
+    df['text'] = df['text'].apply(_normalization)
+    df['text'] = df['text'].apply(_remove_space)
+    df['text'].to_csv('output.csv', index=False, header=False)
+    df[['text']].to_csv('output2.csv', index=False, header=False)
+    return df
 
 swagger_template = dict(
     info = {
@@ -54,7 +65,7 @@ def predict_text_ann():
     text = request.get_json() # get text
     text_clean = text_processing(text['text']) # membersihkan text
     result = predictText_ANN(text_clean) # prediksi text
-    inputdatabaseTextANN(text_clean, result) # input ke database
+    inputDBTextANN(text_clean, result) # input ke database
     return jsonify({"text":text_clean,"result":result}) # response api
 
 @swag_from("docs/swagger_config_file_ann.yml", methods=['POST'])
@@ -63,9 +74,11 @@ def predict_file_ann():
     start_time = time.time()
     file = request.files['file']
     df = pd.read_csv(file, names=['text'], encoding=('ISO-8859-1'))
+    df = file_processing(df)
     df['result'] = predictFile_ANN(df)
-    inputdatabaseFileANN(df)
+    inputDBFileANN(df)
     return jsonify({"result":"file berhasil diupload ke database","time_exc":"--- %s seconds ---" % (time.time() - start_time)})
+
 
 # API for LSTM
 @swag_from("docs/swagger_config_text_lstm.yml", methods=['POST'])
@@ -74,7 +87,7 @@ def predict_text_lstm():
     text = request.get_json() # get text
     text_clean = text_processing(text['text']) # membersihkan text
     result = predictText_LSTM(text_clean) # prediksi text
-    inputdatabaseTextLSTM(text_clean, result) # input ke database
+    inputDBTextLSTM(text_clean, result) # input ke database
     return jsonify({"text":text_clean,"result":result}) # response api
 
 @swag_from("docs/swagger_config_file_lstm.yml", methods=['POST'])
@@ -83,8 +96,9 @@ def predict_file_lstm():
     start_time = time.time()
     file = request.files['file']
     df = pd.read_csv(file, names=['text'], encoding=('ISO-8859-1'))
+    df = file_processing(df)
     df['result'] = predictFile_LSTM(df)
-    inputdatabaseFileLSTM(df)
+    inputDBFileLSTM(df)
     return jsonify({"result":"file berhasil diupload ke database","time_exc":"--- %s seconds ---" % (time.time() - start_time)})
 
 if __name__ == "__main__":

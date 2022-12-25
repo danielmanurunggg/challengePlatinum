@@ -3,15 +3,27 @@ import numpy as np
 from keras_preprocessing.sequence import pad_sequences
 from keras.models import load_model
 
-with open('data/LSTM/tokneizerLSTM.pkl', 'rb') as handle:
+# with open('data/LSTM/tokneizerLSTM.pkl', 'rb') as handle:
+#     tokenizer = pickle.load(handle)
+
+# Model=load_model('data/LSTM/lstmModel.h5')
+
+
+# with open('data/LSTM/tokenizer_fasttext.pickle', 'rb') as handle:
+#     tokenizer = pickle.load(handle)
+
+# Model=load_model('data/LSTM/lstmModel_fasttext_under.h5')
+
+with open('data/LSTM/tokenizer_fasttext2.pickle', 'rb') as handle:
     tokenizer = pickle.load(handle)
 
-Model=load_model('data/LSTM/lstmModel.h5')
+Model=load_model('data/LSTM/lstmModel_fasttext2.h5')
+
 
 def predictText_LSTM(text):
     print(text)
     text = tokenizer.texts_to_sequences([text])
-    text = pad_sequences(text, maxlen=150)
+    text = pad_sequences(text, maxlen=91)
     print(text)
     sentiment = Model.predict(text, batch_size=1,verbose = 2)[0]
     if(np.argmax(sentiment) == 0):
